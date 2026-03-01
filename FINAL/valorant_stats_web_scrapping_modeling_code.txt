@@ -1,0 +1,253 @@
+library(rvest)
+url<- "https://www.vlr.gg/stats"
+valorant <- read_html(url)
+
+library(stringr)
+player <- valorant %>%
+  html_elements(".text-of") %>%
+  html_text2()
+head(player)
+team <- valorant %>%
+  html_elements(".stats-player-country") %>%
+  html_text2()
+head(team)
+RND <- valorant %>%
+  html_elements("td.mod-rnd") %>%
+  html_text2()
+head(RND)
+R <- valorant %>%
+  html_elements(".mod-rnd+ .mod-color-sq span") %>%
+  html_text2()
+head(R)
+ACS <- valorant %>%
+  html_elements(".mod-acs span") %>%
+  html_text2()
+head(ACS)
+KD <- valorant %>%
+  html_elements(".mod-acs+ .mod-color-sq span") %>%
+  html_text2()
+head(KD)
+KAST <- valorant %>%
+  html_elements(".mod-color-sq:nth-child(7) span") %>%
+  html_text2()
+head(KAST)
+ADR <- valorant %>%
+  html_elements(".mod-color-sq:nth-child(8) span") %>%
+  html_text2()
+head(ADR)
+KPR <- valorant %>%
+  html_elements(".mod-color-sq:nth-child(9) span") %>%
+  html_text2()
+head(KPR)
+APR <- valorant %>%
+  html_elements(".mod-color-sq:nth-child(10) span") %>%
+  html_text2()
+head(APR)
+FKPR <- valorant %>%
+  html_elements(".mod-color-sq:nth-child(11) span") %>%
+  html_text2()
+head(FKPR)
+FDPR <- valorant %>%
+  html_elements(".mod-color-sq:nth-child(12) span") %>%
+  html_text2()
+head(FDPR)
+HS <- valorant %>%
+  html_elements(".mod-color-sq:nth-child(13) span") %>%
+  html_text2()
+head(HS)
+CL <- valorant %>%
+  html_elements(".mod-color-sq:nth-child(14) span") %>%
+  html_text2()
+head(CL)
+KMAX <- valorant %>%
+  html_elements(".mod-kmax a") %>%
+  html_text2()
+head(KMAX)
+K <- valorant %>%
+  html_elements(".mod-kmax+ td") %>%
+  html_text2()
+head(K)
+D <- valorant %>%
+  html_elements("td:nth-child(18)") %>%
+  html_text2()
+head(D)
+A <- valorant %>%
+  html_elements("td:nth-child(19)") %>%
+  html_text2()
+head(A)
+FK <- valorant %>%
+  html_elements("td:nth-child(20)") %>%
+  html_text2()
+head(FK)
+FD <- valorant %>%
+  html_elements("td:nth-child(21)") %>%
+  html_text2()
+head(FD)
+vlr_df <- data.frame(
+  Rank= 1:417,
+  Player_Name=player,
+  Team=team,
+  Round_Played=as.integer(RND),
+  Rating=as.numeric(R),
+  Avg_Combat_Score=as.numeric(ACS),
+  Kill_Death_Ratio=as.numeric(KD),
+  KAST_Percentage=as.numeric(gsub("%", "", KAST)),
+  Avg_Damage_Per_Round=as.numeric(ADR),
+  Kill_Per_Round=as.numeric(KPR),
+  Assist_Per_Round=as.numeric(APR),
+  FirstKill_Per_Round=as.numeric(FKPR),
+  FirstDeath_Per_Round=as.numeric(FDPR),
+  Headshot_Percentage=as.numeric(gsub("%", "", HS)),
+  Clutch_Percentage=as.numeric(gsub("%", "", CL)),
+  Max_Kill_Single_Map=as.integer(KMAX),
+  Kills=as.integer(K),
+  Deaths=as.integer(D),
+  Assists=as.integer(A),
+  First_Kills=as.integer(FK),
+  First_Deaths=as.integer(FD)
+)
+head(vlr_df)
+
+str(vlr_df)
+summary(vlr_df)
+colSums(is.na(vlr_df))
+summary(vlr_df[,c("Rating", "Avg_Combat_Score", "Kill_Death_Ratio","Avg_Damage_Per_Round", "Headshot_Percentage")])
+library(ggplot2)
+ggplot(vlr_df, aes(x = Rating)) +
+  geom_histogram(fill = "steelblue", color = "black", bins = 30) +
+  labs(title = "Distribution of Player Ratings", x = "Rating", y = "Frequency")
+ggplot(vlr_df, aes(x = Avg_Combat_Score)) +
+  geom_histogram(fill = "firebrick", color = "white", bins = 30) +
+  labs(title = "Distribution of Average Combat Score", x = "Average_combat_score", y = "Count")
+ggplot(vlr_df, aes(x = Kill_Death_Ratio)) +
+  geom_histogram( fill = "darkgreen", color = "black", bins = 30) +
+  labs(title = "Kill/Death Ratio Distribution",x = "K:D", y = "Frequency")
+ggplot(vlr_df, aes(x = Avg_Damage_Per_Round)) +
+  geom_histogram(fill = "purple", color = "white", bins = 30) +
+  labs(title = "Distribution of Average Damage Per Round", x = "Average damage per round", y = "Count")
+ggplot(vlr_df, aes(x = Headshot_Percentage)) +
+  geom_histogram(fill = "orange", color = "white", bins = 30) +
+  labs(title = "Distribution of Headshot Percentage", x = "HS percentage", y = "Count")
+
+
+ggplot(vlr_df, aes(y = Rating)) +
+  geom_boxplot(fill = "steelblue") +
+  labs(title = "Boxplot of Rating")
+ggplot(vlr_df, aes(y = Avg_Combat_Score)) +
+  geom_boxplot(fill = "firebrick") +
+  labs(title = "Boxplot of Average Combat Score")
+ggplot(vlr_df, aes(y = Kill_Death_Ratio)) +
+  geom_boxplot(fill = "darkgreen") +
+  labs(title = "Boxplot of K:D")
+ggplot(vlr_df, aes(y = Avg_Damage_Per_Round)) +
+  geom_boxplot(fill = "purple") +
+  labs(title = "Boxplot of Average Damage Per Round")
+ggplot(vlr_df, aes(y = Headshot_Percentage)) +
+  geom_boxplot(fill = "orange") +
+  labs(title = "Boxplot of Headshot Percentage")
+
+colSums(is.na(vlr_df))
+vlr_df<- na.omit(vlr_df)
+colSums(is.na(vlr_df))
+
+remove_outliers <- function(x) {
+  Q1 <- quantile(x, 0.25, na.rm = TRUE)
+  Q3 <- quantile(x, 0.75, na.rm = TRUE)
+  IQR <- Q3 - Q1
+  lower <- Q1 - 1.5 * IQR
+  upper <- Q3 + 1.5 * IQR
+  x[x < lower] <- lower
+  x[x > upper] <- upper
+  return(x)
+}
+
+handle_outlier <- c("Rating", "Avg_Combat_Score", "Kill_Death_Ratio", "Avg_Damage_Per_Round", "Headshot_Percentage")
+vlr_df[handle_outlier] <- lapply(vlr_df[handle_outlier], remove_outliers)
+
+sum(duplicated(vlr_df))
+
+vlr_df$Kill_Efficiency <- vlr_df$Kills / vlr_df$Round_Played
+head(vlr_df$Kill_Efficiency)
+vlr_df$Impact_Score <- (vlr_df$Avg_Combat_Score +vlr_df$Kill_Death_Ratio +vlr_df$Headshot_Percentage) / 3
+head(vlr_df$Impact_Score)
+
+library(dplyr)
+library(corrplot)
+corr_features <- vlr_df %>%
+  select(Rating, Avg_Combat_Score, Kill_Death_Ratio,
+         Avg_Damage_Per_Round, Headshot_Percentage,
+         Kill_Efficiency, Impact_Score)
+
+cor_matrix <- cor(corr_features)
+
+corrplot(cor_matrix, method = "color", type = "upper")
+cor_rating <- cor_matrix["Rating", ]
+cor_rating
+
+selected_features <- c("Avg_Combat_Score","Kill_Death_Ratio","Avg_Damage_Per_Round",
+                       "Kill_Efficiency","Impact_Score")
+head(selected_features)
+selected_features
+
+length(unique(vlr_df$Team))
+table(vlr_df$Team)
+vlr_df$Team_Encoded <- as.numeric(as.factor(vlr_df$Team))
+head(vlr_df$Team_Encoded)
+
+numeric_features <- c("Rating", "Avg_Combat_Score", "Kill_Death_Ratio",
+                      "Avg_Damage_Per_Round", "Headshot_Percentage",
+                      "Kill_Efficiency", "Impact_Score")
+
+vlr_df[numeric_features] <- scale(vlr_df[numeric_features])
+head(vlr_df)
+head(vlr_df[numeric_features])
+final_data_valorant <- vlr_df %>%
+  select(Rating, all_of(selected_features), Team_Encoded)
+str(final_data_valorant)
+summary(final_data_valorant)
+write.csv(final_data_valorant, "final_data_valorant.csv", row.names = FALSE)
+
+set.seed(123) 
+train_index <- sample(1:nrow(final_data_valorant), 0.7 * nrow(final_data_valorant))
+
+train_data <- final_data_valorant[train_index, ]
+test_data  <- final_data_valorant[-train_index, ]
+model <- lm(Rating ~ Avg_Combat_Score +
+              Kill_Death_Ratio +
+              Avg_Damage_Per_Round +
+              Kill_Efficiency +
+              Impact_Score +
+              Team_Encoded,
+            data = train_data)
+
+summary(model)
+
+predicted_rating <- predict(model, test_data)
+
+RMSE <- sqrt(mean((test_data$Rating - predicted_rating)^2))
+MAE  <- mean(abs(test_data$Rating - predicted_rating))
+R2   <- cor(test_data$Rating, predicted_rating)^2
+
+RMSE
+MAE
+R2
+
+ggplot(data.frame(Actual = test_data$Rating,
+                  Predicted = predicted_rating),
+       aes(x = Actual, y = Predicted)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1) +
+  labs(title = "Actual vs Predicted Player Ratings",
+       x = "Actual Rating",
+       y = "Predicted Rating")
+
+residuals <- test_data$Rating - predicted_rating
+
+ggplot(data.frame(Residuals = residuals),
+       aes(x = Residuals)) +
+  geom_histogram(fill = "purple", color = "white", bins = 30) +
+  labs(title = "Residual Distribution",
+       x = "Residuals",
+       y = "Frequency")
+
+coef(summary(model))
